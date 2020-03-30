@@ -134,11 +134,13 @@ class TorqueBatchSystem(AbstractGridEngineBatchSystem):
             if self._version == "pro":
                 args = ["qstat", "-x", "-f", str(torqueJobID).split('.')[0]]
             elif self._version == "oss":
-                args = ["qstat", "-f", str(torqueJobID).split('.')[0]]
+                args = ["qstat", "-f", str(torqueJobID).split('.')[0].strip(" b'n\\")]
 
             process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in process.stdout:
+            jobInfo=process.stdout.readlines()
+            for line in jobInfo:
                 line = line.strip()
+                line = str(line).strip(" b'")
                 #logger.debug("getJobExitCode exit status: " + line)
                 # Case differences due to PBSPro vs OSS Torque qstat outputs
                 if line.startswith("failed") or line.startswith("FAILED") and int(line.split()[1]) == 1:
@@ -154,7 +156,7 @@ class TorqueBatchSystem(AbstractGridEngineBatchSystem):
                     # return assumed success; status files should reveal failure
                     return 0
             return None
-
+ 
         """
         Implementation-specific helper methods
         """
