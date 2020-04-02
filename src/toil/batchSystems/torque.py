@@ -220,6 +220,7 @@ class TorqueBatchSystem(AbstractGridEngineBatchSystem):
             fh.write("#PBS -o {}\n".format(stdoutfile))
             fh.write("#PBS -e {}\n".format(stderrfile))
             fh.write("cd $PBS_O_WORKDIR\n\n")
+            # Oh no, there should be some module loading happening here... oh no...
             fh.write(command + "\n")
 
             fh.close
